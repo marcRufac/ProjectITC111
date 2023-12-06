@@ -1,23 +1,38 @@
 #include <iostream>
+#include <vector>
 #include <string>
+#include <algorithm>
 using namespace std;
 
-string name, contactNumber, bookTitle, bookCode, checkOutDate, returnDate;
+struct Book {
+    string code;
+    string title;
+    string checkOutDate;
+    string returnDate;
+};
+
+vector<Book> borrowedBooks;
+vector<Book> returnedBooks;
+
+string name, contactNumber;
 int choice, categoryChoice, subCategoryChoice, recordChoice;
 
-void mainMenu () {
-        cout << "----------------------------------------" << endl;
-        cout << "\t\tOnline Cataloging System" << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "[1] Check-out Book/s" << endl;
-        cout << "[2] Book List" << endl;
-        cout << "[3] My Record" << endl;
-        cout << "[4] Exit" << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "Enter your choice ([1]-[4]): ";
+void mainMenu() {
+    cout << "----------------------------------------" << endl;
+    cout << "\t\tOnline Cataloging System" << endl;
+    cout << "----------------------------------------" << endl;
+    cout << "[1] Check-out Book/s" << endl;
+    cout << "[2] Book List" << endl;
+    cout << "[3] My Record" << endl;
+    cout << "[4] Return Book" << endl;
+    cout << "[5] Exit" << endl;
+    cout << "----------------------------------------" << endl;
+    cout << "Enter your choice ([1]-[5]): ";
 }
 
 void checkOutBook() {
+    Book book;
+    
     cout << "----------------------------------------" << endl;
     cout << "\t\tBook Check-out form" << endl;
     cout << "----------------------------------------" << endl;
@@ -32,16 +47,16 @@ void checkOutBook() {
     getline(cin, contactNumber);
 
     cout << "Book Title: ";
-    getline(cin, bookTitle);
+    getline(cin, book.title);
 
     cout << "Book Code: ";
-    getline(cin, bookCode);
+    getline(cin, book.code);
 
     cout << "Check-out Date (MM/DD/YYYY): ";
-    getline(cin, checkOutDate);
+    getline(cin, book.checkOutDate);
 
     cout << "Return Date (MM/DD/YYYY): ";
-    getline(cin, returnDate);
+    getline(cin, book.returnDate);
 
     cout << "----------------------------------------" << endl;
 
@@ -50,7 +65,7 @@ void checkOutBook() {
     cin >> response;
     cin.ignore(); 
     cout << "\n";
-
+    
     if (response == 'Y') {
         cout << "----------------------------------------" << endl;
         cout << "\t\tBook Check-out Receipt" << endl;
@@ -58,12 +73,16 @@ void checkOutBook() {
 
         cout << "Name: " << name << endl;
         cout << "Contact Number: " << contactNumber << endl;
-        cout << "Book Title: " << bookTitle << endl;
-        cout << "Book Code: " << bookCode << endl;
-        cout << "Check-out Date: " << checkOutDate << endl;
-        cout << "Return Date: " << returnDate << endl;
+        cout << "Book Title: " << book.title << endl;
+        cout << "Book Code: " << book.code << endl;
+        cout << "Check-out Date: " << book.checkOutDate << endl;
+        cout << "Return Date: " << book.returnDate << endl;
         cout << "----------------------------------------" << endl;
         cout << "\tEnter to go back to the menu" << endl;
+        
+        Book borrowedBook = {book.code, book.title, book.checkOutDate, book.returnDate};
+        borrowedBooks.push_back(borrowedBook);
+        
         cin.get();
         mainMenu();
     } else if (response == 'N') {
@@ -596,32 +615,100 @@ void myRecord() {
     cout << "----------------------------------------" << endl;
     cout << "\t\t\t\tMy Record" << endl;
     cout << "----------------------------------------" << endl;
-    
+
     cout << "[1] Show borrowed books" << endl;
     cout << "[2] Show returned books" << endl;
     cout << "----------------------------------------" << endl;
     cout << "Enter your choice ([1]-[2]): ";
-    
+
     cin >> recordChoice;
-    
+
     switch (recordChoice) {
-        case 1: 
-        cout << "Borrowed books: " << bookCode << ": " << bookTitle << endl;
-        cout << "Check-out Date: " << checkOutDate << endl;
-        break;
-        
+        case 1:
+            if (borrowedBooks.empty()) {
+                cout << "No borrowed books yet" << endl;
+                cout << "\n";
+                mainMenu();
+            } else {
+                for (const Book &book : borrowedBooks) {
+                    cout << "Book Code: " << book.code << ", Title: " << book.title << endl;
+                    cout << "Check-out Date: " << book.checkOutDate << endl;
+                    cout << "----------------------------------------" << endl;
+                }
+                    cout << "\tEnter to go back to the menu" << endl;
+                    cin.ignore();
+                    cin.get();
+                    mainMenu();
+            }
+            break;
+
         case 2:
-        cout << "Returned books: " << bookCode << ": " << bookTitle << endl;
-        cout << "Return Date: " << returnDate;
-        break;
-        
+            if (returnedBooks.empty()) {
+                cout << "No returned books yet" << endl;
+                cout << "\n";
+                mainMenu();
+            } else {
+                for (const Book &book : returnedBooks) {
+                    cout << "Book Code: " << book.code << ", Title: " << book.title << endl;
+                    cout << "Return Date: " << book.returnDate << endl;
+                    cout << "----------------------------------------" << endl;
+                }
+                    cout << "\tEnter to go back to the menu" << endl;
+                    cin.ignore();
+                    cin.get();
+                    mainMenu();
+            }
+            break;
+
         default:
-        cout << "Invalid Input";
-        mainMenu();
-        break;
+            cout << "Invalid Input";
+            mainMenu();
+            break;
+        }
     }
     
+void bookReturnCode() {
+    Book book;
+    
+    cout << "Book Code: ";
+    getline (cin, book.code);
+    
+    auto it = find_if(borrowedBooks.begin(), borrowedBooks.end(), [&book](const Book& b) { return b.code == book.code; });
+    
+    if (it != borrowedBooks.end()) {
+        returnedBooks.push_back(*it);
+        borrowedBooks.erase(it);
+        
+        cout << "Books returned successfully!" << endl;
+    } else {
+        cout << "Book not found in your borrowed books" << endl;
+    }
+        cout << "----------------------------------------" << endl;
 }
+
+void returnBook() {
+    Book book;
+    
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\tReturn Book" << endl;
+    cout << "----------------------------------------" << endl;
+    
+    if (borrowedBooks.empty()) {
+        cout << "No borrowed books yet" << endl;
+        mainMenu();
+    } else if (!borrowedBooks.empty()) { 
+        cout << "Your Borrowed Books:" << endl;
+            for (const Book& book : borrowedBooks) {
+        cout << "Book Code: " << book.code << ", Title: " << book.title << endl;
+        cout << "Check-out Date: " << book.checkOutDate << endl;
+        cout << "----------------------------------------" << endl;
+        bookReturnCode();
+        }
+    } else {
+        bookReturnCode();
+    }
+}   
+
 int main () {
         cout << "----------------------------------------" << endl;
         cout << "\t\tOnline Cataloging System" << endl;
@@ -629,16 +716,15 @@ int main () {
         cout << "[1] Check-out Book/s" << endl;
         cout << "[2] Book List" << endl;
         cout << "[3] My Record" << endl;
-        cout << "[4] Exit" << endl;
+        cout << "[4] Return Book" << endl;
+        cout << "[5] Exit" << endl;
         cout << "----------------------------------------" << endl;
-        cout << "Enter your choice ([1]-[4]): ";
+        cout << "Enter your choice ([1]-[5]): ";
         
-    do {
-        
-        cin >> choice;
-        
+        do { cin >> choice;
+
         switch (choice) {
-            case 1: 
+            case 1:
                 checkOutBook();
                 break;
             case 2:
@@ -648,6 +734,9 @@ int main () {
                 myRecord();
                 break;
             case 4:
+                returnBook();
+                break;
+            case 5:
                 cout << "----------------------------------------" << endl;
                 cout << "\t\t\tTHANK YOU !!!" << endl;
                 cout << "----------------------------------------" << endl;
@@ -656,7 +745,6 @@ int main () {
                 cout << "Invalid Input" << endl;
                 mainMenu();
                 break;
-        }
-    } while (choice != 4);
-return 0;
-}
+            }
+        } while (choice != 5);
+    }
