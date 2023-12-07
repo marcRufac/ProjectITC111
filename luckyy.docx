@@ -40,7 +40,8 @@ void returnBook() {
     Book book;
     Person person;
     
-    cout << "----------------------------------------" << endl;
+    if (borrowedCount != 0) {
+        cout << "----------------------------------------" << endl;
     cout << "\t\t\tReturn Book" << endl;
     cout << "----------------------------------------" << endl;
     
@@ -98,6 +99,10 @@ void returnBook() {
         cout << "----------------------------------------" << endl;
         cout << "\t\tInvalid Input" << endl;
         cout << "----------------------------------------" << endl;
+        mainMenu();
+        }
+    } else {
+        cout << "No borrowed books yet" << endl;
         mainMenu();
     }
 }
@@ -721,7 +726,7 @@ void myRecord() {
                 mainMenu();
             } else {
                 for (int i = 0; i < returnedCount; ++i) {
-                    cout << "Book Code: " << returnedBooks[i].checkOutDate << ", Title: " << returnedBooks[i].title << endl;
+                    cout << "Book Code: " << returnedBooks[i].code << ", Title: " << returnedBooks[i].title << endl;
                     cout << "Return Date: " << returnedBooks[i].returnDate << endl;
                     cout << "----------------------------------------" << endl;
                 }
