@@ -1,55 +1,227 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
 using namespace std;
 
-struct Book {
-    string code;
-    string title;
-    string checkOutDate;
-    string returnDate;
+struct Book
+{
+  string code;
+  string title;
+  string checkOutDate;
+  string returnDate;
 };
 
-struct Person {
-    string name;
-    string contactNumber;
+struct Person
+{
+  string name;
+  string contactNumber;
 };
 
-Book borrowedBooks[10]; 
-Book returnedBooks[10]; 
+Book borrowedBooks[10];
+Book returnedBooks[10];
 
 int choice, categoryChoice, subCategoryChoice, recordChoice;
 int borrowedCount = 0;
 int returnedCount = 0;
 
+void loginMenu();
+void login();
+void registr();
+void forgot();
 void mainMenu();
+void returnBook();
+void checkOutBook();
+void booksAvailable();
+void myRecord();
 
-void mainMenu () {
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\tCheckitOUT Menu" << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "[1] Check-out Book/s" << endl;
-        cout << "[2] Book List" << endl;
-        cout << "[3] Return Book" << endl;
-        cout << "[4] My Record" << endl;
-        cout << "[5] Exit" << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "Enter your choice ([1]-[5]): ";
+void loginMenu() 
+{
+    int choice;
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t  Login Menu" << endl;
+    cout << "----------------------------------------" << endl;
+    cout << "[1] Login" << endl;
+    cout << "[2] Register" << endl;
+    cout << "[3] Forgot username or password" << endl;
+    cout << "[4] Exit" << endl;
+    cout << "----------------------------------------" <<endl;
+    cout << "Enter your choice ([1]-[4]): ";
+        
+    do
+  {
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 1:
+      login();
+      break;
+    case 2:
+      registr();
+      break;
+    case 3:
+      forgot();
+      break;
+    case 4:
+      cout << "----------------------------------------" << endl;
+      cout << "\t\t\tTHANK YOU !!!" << endl;
+      cout << "----------------------------------------" << endl;
+      break;
+    default:
+      cout << "Invalid Input" << endl;
+      loginMenu();
+      break;
+    }
+  } while (choice != 4);
 }
 
-void returnBook() {
-    Book book;
-    Person person;
-    
-    if (borrowedCount != 0) {
-        cout << "----------------------------------------" << endl;
+void login() 
+{
+  int count;
+  string user, pass, u, p;
+  
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tLogin" << endl;
+    cout << "----------------------------------------" << endl;
+
+  cout << "\t(Complete the information below)" << endl;
+  cout << "\n";
+  
+  cout << "Username: ";
+  cin.ignore();
+  getline(cin, user);
+  
+  cout << "Password: ";
+  getline(cin, pass);
+
+  ifstream input("database.txt");
+  while(input >> u >> p) {
+    if (u==user && p==pass) {
+      count = 1;
+    }
+  }
+  input.close();
+  if(count == 1) {
+    cout << "Hello " << user << "\n<Login Successful>\n";
+    cin.get();
+    mainMenu();
+  }
+  else {
+    cout << "----------------------------------------" << endl;
+    cout << "\tInvalid Username and Password" << endl;
+    cout << "----------------------------------------" << endl;
+    loginMenu();
+  }
+}
+
+void registr() 
+{
+  string reguser, regpass, ru, pu;
+  
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tRegister" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "\t(Complete the information below)" << endl;
+    cout << "\n";
+  
+  cout << "Enter your username: ";
+  cin.ignore();
+  getline(cin, reguser);
+
+  cout << "Enter your password: ";
+  getline(cin, regpass);
+
+  ofstream reg("database.txt", ios::app);
+  reg << reguser << " " << regpass << endl;
+  cout << "\nRegistration Successful." << endl;
+  mainMenu();
+}
+
+void forgot() 
+{
+  int ch;
+  
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\tForgot Account" << endl;
+    cout << "----------------------------------------" << endl;
+
+  cout << "[1] Search your Id by Username" << endl;
+  cout << "[2] Go back to Login Menu" << endl;
+  cout << "----------------------------------------" <<endl;
+    cout << "Enter your choice ([1]-[2]): ";
+  
+  cin >> ch;
+  switch (ch)
+  {
+    case 1: {
+      int count = 0;
+      string searchUser, su, sp;
+
+      cout << "\nEnter your Username: ";
+      cin.ignore();
+      getline(cin, searchUser);
+
+      ifstream searchu("database.txt");
+      while(searchu >> su >> sp) {
+        if (su==searchUser) {
+          count = 1;
+        }
+      }
+      searchu.close();
+      if (count == 1) {
+        cout << "\nAccount Found!" << endl;
+        cout << "Your password is: " << sp;
+        cin.get();
+        mainMenu();
+      }
+      else {
+        cout << "Sorry, your userID is not found in our Database.\n" << endl;
+        cout << "----------------------------------------" <<endl;
+        cout << "\tEnter to go back to the menu" << endl;
+        cin.get();
+        loginMenu();
+      }
+      break;
+    }
+    case 2:
+    loginMenu();
+  }
+}
+
+void mainMenu()
+{
+  cout << "----------------------------------------" << endl;
+  cout << "\t\t\tCheckitOUT Menu" << endl;
+  cout << "----------------------------------------" << endl;
+  cout << "[1] Book List" << endl;
+  cout << "[2] Check-out Book/s" << endl;
+  cout << "[3] Return Book" << endl;
+  cout << "[4] My Record" << endl;
+  cout << "[5] Exit" << endl;
+  cout << "----------------------------------------" << endl;
+  cout << "Enter your choice ([1]-[5]): ";
+}
+
+void returnBook()
+{
+  Book book;
+  Person person;
+
+  if (borrowedCount != 0)
+  {
+    cout << "----------------------------------------" << endl;
     cout << "\t\t\tReturn Book" << endl;
     cout << "----------------------------------------" << endl;
-    
+
     cout << "\t(Complete the information below)" << endl;
     cout << "\n";
 
     cout << "Name: ";
-    cin.ignore(); 
+    cin.ignore();
     getline(cin, person.name);
 
     cout << "Contact number: ";
@@ -65,715 +237,758 @@ void returnBook() {
     getline(cin, book.returnDate);
 
     cout << "----------------------------------------" << endl;
-    
+
     char response;
     cout << "Do you want to return this book? [Y/N]: ";
     cin >> response;
-    cin.ignore(); 
-    cout << "\n";
-    
-    if (response == 'Y') {
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\tBook Return Receipt" << endl;
-        cout << "----------------------------------------" << endl;
-        
-        cout << "Name: " << person.name << endl;
-        cout << "Contact Number: " << person.contactNumber << endl;
-        cout << "Book Title: " << book.title << endl;
-        cout << "Book Code: " << book.code << endl;
-        cout << "Return Date: " << book.returnDate << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "\tEnter to go back to the menu" << endl;
-        
-        returnedBooks[returnedCount] = {book.code, book.title, book.checkOutDate, book.returnDate};
-        returnedCount++;
-        
-        borrowedBooks[borrowedCount] = {book.code, book.title, book.checkOutDate, book.returnDate};
-        borrowedCount--;
-        
-        cin.get();
-        mainMenu();
-    } else if (response == 'N') {
-        mainMenu();
-    } else {
-        cout << "----------------------------------------" << endl;
-        cout << "\t\tInvalid Input" << endl;
-        cout << "----------------------------------------" << endl;
-        mainMenu();
-        }
-    } else {
-        cout << "No borrowed books yet" << endl;
-        mainMenu();
-    }
-}
-
-void checkOutBook() {
-    Book book;
-    Person person;
-    
-    cout << "----------------------------------------" << endl;
-    cout << "\t\tBook Check-out form" << endl;
-    cout << "----------------------------------------" << endl;
-
-    cout << "\t(Complete the information below)" << endl;
-    cout << "\n";
-
-    cout << "Name: ";
-    cin.ignore(); 
-    getline(cin, person.name);
-
-    cout << "Contact number: ";
-    getline(cin, person.contactNumber);
-
-    cout << "Book Title: ";
-    getline(cin, book.title);
-
-    cout << "Book Code: ";
-    getline(cin, book.code);
-
-    cout << "Check-out Date (MM/DD/YYYY): ";
-    getline(cin, book.checkOutDate);
-
-    cout << "----------------------------------------" << endl;
-
-    char response;
-    cout << "Do you want to check out this book? [Y/N]: ";
-    cin >> response;
-    cin.ignore(); 
-    cout << "\n";
-
-    if (response == 'Y') {
-        cout << "----------------------------------------" << endl;
-        cout << "\t\tBook Check-out Receipt" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "Name: " << person.name << endl;
-        cout << "Contact Number: " << person.contactNumber << endl;
-        cout << "Book Title: " << book.title << endl;
-        cout << "Book Code: " << book.code << endl;
-        cout << "Check-out Date: " << book.checkOutDate << endl;
-        cout << "----------------------------------------" << endl;
-        cout << "\tEnter to go back to the menu" << endl;
-        
-        borrowedBooks[borrowedCount] = {book.code, book.title, book.checkOutDate, book.returnDate};
-        borrowedCount++;
-        
-        cin.get();
-        mainMenu();
-    } else if (response == 'N') {
-        mainMenu();
-    } else {
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\tInvalid Input" << endl;
-        cout << "----------------------------------------" << endl;
-        mainMenu();
-    }
-}
-
-void booksAvailable () {
-    cout << "----------------------------------------" << endl;
-    cout << "\t\t\tAvailable Books" << endl;
-    cout << "----------------------------------------" << endl;
-
-    cout << "[1] GE" << endl;
-    cout << "[2] PROFED" << endl;
-    cout << "[3] PE" << endl;
-    cout << "[4] RESLIFE" << endl;
-    cout << "[5] SCI" << endl;
-    cout << "[6] HUMMS" << endl;
-    cout << "[7] MAPEH" << endl;
-    cout << "[8] MATH" << endl;
-    cout << "[9] HR" << endl;
-    cout << "[10] ENG" << endl;
-    cout << "[11] AP" << endl;
-    cout << "[12] FIL" << endl;
-    cout << "[13] NON-CATEGORIZED BOOKS" << endl;
-    cout << "Enter your choice ([1]-[13]): ";
-
-    cin >> categoryChoice;
-
-    switch (categoryChoice) {
-        case 1:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tGE BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "GE01: Understanding the Self" << endl;
-        cout << "GE02: Readings in Philippine History" << endl;
-        cout << "GE03: The Contemporary World" << endl;
-        cout << "GE04: Mathematics in the Modern World" << endl;
-        cout << "GE05: Purposive Communication" << endl;
-        cout << "GE06: Art Appreciation" << endl;
-        cout << "GE08: Introduction to Ethics" << endl;
-        cout << "GE09: Dr. Jose Rizal the Timeless Filipino" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 2:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\tPROFED BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "PROFED1: Child Adolescent Development" << endl;
-        cout << "PROFED2: The Teaching Profession" << endl;
-        cout << "PROFED4: Facilitating Learner Centered Teaching" << endl;
-        cout << "PROFED5: The School and the Community, School Culture Organizational Leadership" << endl;
-        cout << "PROFED6: The Teacher and the School Curriculum" << endl;
-        cout << "PROFED8: Assessment in Learning 1" << endl;
-        cout << "PROFED9: Building and Enhancing New Literacies Across the Curriculum" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 3:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tPE BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "PE01: Pathfit 1" << endl;
-        cout << "PEH1: Physical Activity and Health Habits of Life" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 4:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\tRESLIFE BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "RESLIFE1: Guide to Qualitative Research Writing 1" << endl;
-        cout << "RESLIFE2: Guide to Quantitative Research Writing 2" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 5:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tSCI BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "SCI7: Science Technology 7" << endl;
-        cout << "SCI7: Science Technology 8" << endl;
-        cout << "SCI7: Science Technology 9" << endl;
-        cout << "SCI7: Science Technology 10" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 6: 
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tHUMMS BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "HUMSS103: Creative Writing" << endl;
-        cout << "HUMSS104: Politics and Governance" << endl;
-        cout << "HUMSS105: Disciplines and idea in the Applied Social Sciences" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 7:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tMAPEH BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "MAPEH7: MAPEH on the Go 7: K-12 Revised Edition" << endl;
-        cout << "MAPEH8: MAPEH on the go 8 K-12 Revised Edition" << endl;
-        cout << "MAPEH9: MAPEH in the go 9 K-12 Revised Edition" << endl;
-        cout << "MAPEH10: MAPEH in the go 10 K-12 Revised Edition" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 8:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tMATH BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "MATH7: Application Concepts Exploration Skills (ACES) MATH 7" << endl;
-        cout << "MATH8: Application Concepts Exploration Skills (ACES) MATH 8" << endl;
-        cout << "MATH10: Application Concepts Exploration Skills (ACES) MATH 10" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 9:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tHR BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "HR102: Essetial of Administrative Office Manegement" << endl;
-        cout << "HR103: Introduction to Human Resource Management" << endl;
-        cout << "HR107: Funda,emtals of Performance Management" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 10:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tENG BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "ENG7: Philippine Literature and Communication Arts: Grade 7" << endl;
-        cout << "ENG8: Asian and African Literature and Competencies" << endl;
-        cout << "ENG9: Workbook in English 9 Bases on most Essential Learning Competencies" << endl;
-        cout << "ENG10: Working in English 10 Bases on most Essential Learning Competencies" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 11:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tAP BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "AP7: Araling Asyano" << endl;
-        cout << "AP8: Kasaysayan ng Daigdig" << endl;
-        cout << "AP9: Ekonomiks" << endl;
-        cout << "AP10: Mga Kontemporaryong Isyu" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 12:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\t\t\tFIL BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "FIL7: Bukal ng mga Kasanayan sa Filipino 7" << endl;
-        cout << "FIL8: Teksto at Akdang Pampanitikang Pambansa" << endl;
-        cout << "FIL9: Bukal ng mga Kasanayan sa Filipino 9" << endl;
-        cout << "FIL10: Bukal ng mga Kasanayan sa Filipino 10" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-
-        case 13:
-        cout << "----------------------------------------" << endl;
-        cout << "\t\tNON-CATEGORIZED BOOKS" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "AE5: Internation Bussiness Trade" << endl;
-        cout << "AKAD:KOLAB: Tuon sa Kolaboratibong Pagsulat sa Filipino sa Piling Larangan" << endl;
-        cout << "BA- TAX101: Simplified Income Taxation" << endl;
-        cout << "CAL01: The Calculus" << endl;
-        cout << "COMCON: Oral Communication in Context" << endl;
-        cout << "CPE01: Programming Logic and Design" << endl;
-        cout << "DE: Engineering differential equations" << endl;
-        cout << "EARTHSCIE: Earth Science for SHS" << endl;
-        cout << "ECO2: Microeconomics Theories and Application" << endl;
-        cout << "EE19: Electricial Circuits 1" << endl;
-        cout << "EMF: Engineering Mathematics Formula" << endl;
-        cout << "E-TECH: Empowerment Technologies" << endl;
-        cout << "FM106: Credit and Collection" << endl;
-        cout << "FS1: Field Study 1" << endl;
-        cout << "GE-ELEC2: Pantulong sa Pananaliksik sa Filipino sa iba\'t ibang Disiplina" << endl;
-        cout << "GENMATH: Genaral Mathematics" << endl;
-        cout << "MEDINFO: Media and information literacy" << endl;
-        cout << "MGT7A: Financial management" << endl;
-        cout << "MKTG12: Management of human behavior in an organization" << endl;
-        cout << "NSTP: National service training program 1 2023 edition" << endl;
-        cout << "PERSDEV: Personal development" << endl;
-        cout << "PHILO: Foundation of philosophy" << endl;
-        cout << "PHILWORD: Contemporary Literature" << endl;
-        cout << "STEM101: Pre calculus for senior high" << endl;
-        cout << "UCSPOL: Understanding Culture Society and Politics (New Edition)" << endl;
-        cout << "WIKA: Tulay sa Komunikasyon at Pananaliksik sa Wika at Kulturang Filipino" << endl;
-        cout << "----------------------------------------" << endl;
-
-        cout << "[1] Proceed to Check-out" << endl;
-        cout << "[2] Back to Category" << endl;
-        cout << "[3] Back to Main Menu" << endl;
-        cout << "Enter your choice ([1]-[3]): ";
-        cin >> subCategoryChoice;
-
-        switch (subCategoryChoice) {
-            case 1:
-            checkOutBook();
-            break;
-
-            case 2:
-            booksAvailable();
-            break;
-
-            case 3:
-            mainMenu();
-            break;
-
-            default:
-            cout << "Invalid Input";
-            break;
-        }
-        break;
-    } 
-}
-
-void myRecord() {
-    Book book;
-    
-    cout << "----------------------------------------" << endl;
-    cout << "\t\t\t\tMy Record" << endl;
-    cout << "----------------------------------------" << endl;
-
-    cout << "[1] Show borrowed books" << endl;
-    cout << "[2] Show returned books" << endl;
-    cout << "----------------------------------------" << endl;
-    cout << "Enter your choice ([1]-[2]): ";
-    
     cin.ignore();
-    cin >> recordChoice;
-    
-    switch (recordChoice) {
-        case 1:
-            if (borrowedCount == 0) {
-                cout << "No borrowed books yet" << endl;
-                cout << "\n";
-                mainMenu();
-            } else {
-                for (int i = 0; i < borrowedCount; ++i) {
-                    cout << "Book Code: " << borrowedBooks[i].code << ", Title: " << borrowedBooks[i].title << endl;
-                    cout << "Check-out Date: " << borrowedBooks[i].checkOutDate << endl;
-                    cout << "----------------------------------------" << endl;
-                }
-                cout << "\tEnter to go back to the menu" << endl;
-                cin.ignore();
-                cin.get();
-                mainMenu();
-            }
-            break;
-        
-        case 2:
-            if (returnedCount == 0) {
-                cout << "No returned books yet" << endl;
-                cout << "\n";
-                mainMenu();
-            } else {
-                for (int i = 0; i < returnedCount; ++i) {
-                    cout << "Book Code: " << returnedBooks[i].code << ", Title: " << returnedBooks[i].title << endl;
-                    cout << "Return Date: " << returnedBooks[i].returnDate << endl;
-                    cout << "----------------------------------------" << endl;
-                }
-                    cout << "\tEnter to go back to the menu" << endl;
-                    cin.ignore();
-                    cin.get();
-                    mainMenu();
-            }
-        break;
+    cout << "\n";
 
-        default:
-            cout << "Invalid Input";
-            mainMenu();
-            break;
+    if (response == 'Y')
+    {
+      cout << "----------------------------------------" << endl;
+      cout << "\t\t\tBook Return Receipt" << endl;
+      cout << "----------------------------------------" << endl;
+
+      cout << "Name: " << person.name << endl;
+      cout << "Contact Number: " << person.contactNumber << endl;
+      cout << "Book Title: " << book.title << endl;
+      cout << "Book Code: " << book.code << endl;
+      cout << "Return Date: " << book.returnDate << endl;
+      cout << "----------------------------------------" << endl;
+      cout << "\tEnter to go back to the menu" << endl;
+
+      returnedBooks[returnedCount] = {book.code, book.title, book.checkOutDate, book.returnDate};
+      returnedCount++;
+
+      borrowedBooks[borrowedCount] = {book.code, book.title, book.checkOutDate, book.returnDate};
+      borrowedCount--;
+
+      cin.get();
+      mainMenu();
     }
+    else if (response == 'N')
+    {
+      mainMenu();
+    }
+    else
+    {
+      cout << "----------------------------------------" << endl;
+      cout << "\t\tInvalid Input" << endl;
+      cout << "----------------------------------------" << endl;
+      mainMenu();
+    }
+  }
+  else
+  {
+    cout << "No borrowed books yet" << endl;
+    mainMenu();
+  }
 }
 
-int main () {
+void checkOutBook()
+{
+  Book book;
+  Person person;
+
+  cout << "----------------------------------------" << endl;
+  cout << "\t\tBook Check-out form" << endl;
+  cout << "----------------------------------------" << endl;
+
+  cout << "\t(Complete the information below)" << endl;
+  cout << "\n";
+
+  cout << "Name: ";
+  cin.ignore();
+  getline(cin, person.name);
+
+  cout << "Contact number: ";
+  getline(cin, person.contactNumber);
+
+  cout << "Book Title: ";
+  getline(cin, book.title);
+
+  cout << "Book Code: ";
+  getline(cin, book.code);
+
+  cout << "Check-out Date (MM/DD/YYYY): ";
+  getline(cin, book.checkOutDate);
+
+  cout << "----------------------------------------" << endl;
+
+  char response;
+  cout << "Do you want to check out this book? [Y/N]: ";
+  cin >> response;
+  cin.ignore();
+  cout << "\n";
+
+  if (response == 'Y')
+  {
+    cout << "----------------------------------------" << endl;
+    cout << "\t\tBook Check-out Receipt" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "Name: " << person.name << endl;
+    cout << "Contact Number: " << person.contactNumber << endl;
+    cout << "Book Title: " << book.title << endl;
+    cout << "Book Code: " << book.code << endl;
+    cout << "Check-out Date: " << book.checkOutDate << endl;
+    cout << "----------------------------------------" << endl;
+    cout << "\tEnter to go back to the menu" << endl;
+
+    borrowedBooks[borrowedCount] = {book.code, book.title, book.checkOutDate, book.returnDate};
+    borrowedCount++;
+
+    cin.get();
     mainMenu();
+  }
+  else if (response == 'N')
+  {
+    mainMenu();
+  }
+  else
+  {
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\tInvalid Input" << endl;
+    cout << "----------------------------------------" << endl;
+    mainMenu();
+  }
+}
+
+void booksAvailable()
+{
+  cout << "----------------------------------------" << endl;
+  cout << "\t\t\tAvailable Books" << endl;
+  cout << "----------------------------------------" << endl;
+
+  cout << "[1] GE" << endl;
+  cout << "[2] PROFED" << endl;
+  cout << "[3] PE" << endl;
+  cout << "[4] RESLIFE" << endl;
+  cout << "[5] SCI" << endl;
+  cout << "[6] HUMMS" << endl;
+  cout << "[7] MAPEH" << endl;
+  cout << "[8] MATH" << endl;
+  cout << "[9] HR" << endl;
+  cout << "[10] ENG" << endl;
+  cout << "[11] AP" << endl;
+  cout << "[12] FIL" << endl;
+  cout << "[13] NON-CATEGORIZED BOOKS" << endl;
+  cout << "Enter your choice ([1]-[13]): ";
+
+  cin >> categoryChoice;
+
+  switch (categoryChoice)
+  {
+  case 1:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tGE BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "GE01: Understanding the Self" << endl;
+    cout << "GE02: Readings in Philippine History" << endl;
+    cout << "GE03: The Contemporary World" << endl;
+    cout << "GE04: Mathematics in the Modern World" << endl;
+    cout << "GE05: Purposive Communication" << endl;
+    cout << "GE06: Art Appreciation" << endl;
+    cout << "GE08: Introduction to Ethics" << endl;
+    cout << "GE09: Dr. Jose Rizal the Timeless Filipino" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 2:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\tPROFED BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "PROFED1: Child Adolescent Development" << endl;
+    cout << "PROFED2: The Teaching Profession" << endl;
+    cout << "PROFED4: Facilitating Learner Centered Teaching" << endl;
+    cout << "PROFED5: The School and the Community, School Culture Organizational Leadership" << endl;
+    cout << "PROFED6: The Teacher and the School Curriculum" << endl;
+    cout << "PROFED8: Assessment in Learning 1" << endl;
+    cout << "PROFED9: Building and Enhancing New Literacies Across the Curriculum" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 3:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tPE BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "PE01: Pathfit 1" << endl;
+    cout << "PEH1: Physical Activity and Health Habits of Life" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 4:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\tRESLIFE BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "RESLIFE1: Guide to Qualitative Research Writing 1" << endl;
+    cout << "RESLIFE2: Guide to Quantitative Research Writing 2" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 5:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tSCI BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "SCI7: Science Technology 7" << endl;
+    cout << "SCI7: Science Technology 8" << endl;
+    cout << "SCI7: Science Technology 9" << endl;
+    cout << "SCI7: Science Technology 10" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 6:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tHUMMS BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "HUMSS103: Creative Writing" << endl;
+    cout << "HUMSS104: Politics and Governance" << endl;
+    cout << "HUMSS105: Disciplines and idea in the Applied Social Sciences" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 7:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tMAPEH BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "MAPEH7: MAPEH on the Go 7: K-12 Revised Edition" << endl;
+    cout << "MAPEH8: MAPEH on the go 8 K-12 Revised Edition" << endl;
+    cout << "MAPEH9: MAPEH in the go 9 K-12 Revised Edition" << endl;
+    cout << "MAPEH10: MAPEH in the go 10 K-12 Revised Edition" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 8:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tMATH BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "MATH7: Application Concepts Exploration Skills (ACES) MATH 7" << endl;
+    cout << "MATH8: Application Concepts Exploration Skills (ACES) MATH 8" << endl;
+    cout << "MATH10: Application Concepts Exploration Skills (ACES) MATH 10" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 9:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tHR BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "HR102: Essetial of Administrative Office Manegement" << endl;
+    cout << "HR103: Introduction to Human Resource Management" << endl;
+    cout << "HR107: Funda,emtals of Performance Management" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 10:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tENG BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "ENG7: Philippine Literature and Communication Arts: Grade 7" << endl;
+    cout << "ENG8: Asian and African Literature and Competencies" << endl;
+    cout << "ENG9: Workbook in English 9 Bases on most Essential Learning Competencies" << endl;
+    cout << "ENG10: Working in English 10 Bases on most Essential Learning Competencies" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 11:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tAP BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "AP7: Araling Asyano" << endl;
+    cout << "AP8: Kasaysayan ng Daigdig" << endl;
+    cout << "AP9: Ekonomiks" << endl;
+    cout << "AP10: Mga Kontemporaryong Isyu" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 12:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\t\t\tFIL BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "FIL7: Bukal ng mga Kasanayan sa Filipino 7" << endl;
+    cout << "FIL8: Teksto at Akdang Pampanitikang Pambansa" << endl;
+    cout << "FIL9: Bukal ng mga Kasanayan sa Filipino 9" << endl;
+    cout << "FIL10: Bukal ng mga Kasanayan sa Filipino 10" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+
+  case 13:
+    cout << "----------------------------------------" << endl;
+    cout << "\t\tNON-CATEGORIZED BOOKS" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "AE5: Internation Bussiness Trade" << endl;
+    cout << "AKAD:KOLAB: Tuon sa Kolaboratibong Pagsulat sa Filipino sa Piling Larangan" << endl;
+    cout << "BA- TAX101: Simplified Income Taxation" << endl;
+    cout << "CAL01: The Calculus" << endl;
+    cout << "COMCON: Oral Communication in Context" << endl;
+    cout << "CPE01: Programming Logic and Design" << endl;
+    cout << "DE: Engineering differential equations" << endl;
+    cout << "EARTHSCIE: Earth Science for SHS" << endl;
+    cout << "ECO2: Microeconomics Theories and Application" << endl;
+    cout << "EE19: Electricial Circuits 1" << endl;
+    cout << "EMF: Engineering Mathematics Formula" << endl;
+    cout << "E-TECH: Empowerment Technologies" << endl;
+    cout << "FM106: Credit and Collection" << endl;
+    cout << "FS1: Field Study 1" << endl;
+    cout << "GE-ELEC2: Pantulong sa Pananaliksik sa Filipino sa iba\'t ibang Disiplina" << endl;
+    cout << "GENMATH: Genaral Mathematics" << endl;
+    cout << "MEDINFO: Media and information literacy" << endl;
+    cout << "MGT7A: Financial management" << endl;
+    cout << "MKTG12: Management of human behavior in an organization" << endl;
+    cout << "NSTP: National service training program 1 2023 edition" << endl;
+    cout << "PERSDEV: Personal development" << endl;
+    cout << "PHILO: Foundation of philosophy" << endl;
+    cout << "PHILWORD: Contemporary Literature" << endl;
+    cout << "STEM101: Pre calculus for senior high" << endl;
+    cout << "UCSPOL: Understanding Culture Society and Politics (New Edition)" << endl;
+    cout << "WIKA: Tulay sa Komunikasyon at Pananaliksik sa Wika at Kulturang Filipino" << endl;
+    cout << "----------------------------------------" << endl;
+
+    cout << "[1] Proceed to Check-out" << endl;
+    cout << "[2] Back to Category" << endl;
+    cout << "[3] Back to Main Menu" << endl;
+    cout << "Enter your choice ([1]-[3]): ";
+    cin >> subCategoryChoice;
+
+    switch (subCategoryChoice)
+    {
+    case 1:
+      checkOutBook();
+      break;
+
+    case 2:
+      booksAvailable();
+      break;
+
+    case 3:
+      mainMenu();
+      break;
+
+    default:
+      cout << "Invalid Input";
+      break;
+    }
+    break;
+  }
+}
+
+void myRecord()
+{
+  Book book;
+
+  cout << "----------------------------------------" << endl;
+  cout << "\t\t\t\tMy Record" << endl;
+  cout << "----------------------------------------" << endl;
+
+  cout << "[1] Show borrowed books" << endl;
+  cout << "[2] Show returned books" << endl;
+  cout << "----------------------------------------" << endl;
+  cout << "Enter your choice ([1]-[2]): ";
+
+  cin.ignore();
+  cin >> recordChoice;
+
+  switch (recordChoice)
+  {
+  case 1:
+    if (borrowedCount == 0)
+    {
+      cout << "No borrowed books yet" << endl;
+      cout << "\n";
+      mainMenu();
+    }
+    else
+    {
+      for (int i = 0; i < borrowedCount; ++i)
+      {
+        cout << "Book Code: " << borrowedBooks[i].code << ", Title: " << borrowedBooks[i].title << endl;
+        cout << "Check-out Date: " << borrowedBooks[i].checkOutDate << endl;
+        cout << "----------------------------------------" << endl;
+      }
+      cout << "\tEnter to go back to the menu" << endl;
+      cin.ignore();
+      cin.get();
+      mainMenu();
+    }
+    break;
+
+  case 2:
+    if (returnedCount == 0)
+    {
+      cout << "No returned books yet" << endl;
+      cout << "\n";
+      mainMenu();
+    }
+    else
+    {
+      for (int i = 0; i < returnedCount; ++i)
+      {
+        cout << "Book Code: " << returnedBooks[i].code << ", Title: " << returnedBooks[i].title << endl;
+        cout << "Return Date: " << returnedBooks[i].returnDate << endl;
+        cout << "----------------------------------------" << endl;
+      }
+      cout << "\tEnter to go back to the menu" << endl;
+      cin.ignore();
+      cin.get();
+      mainMenu();
+    }
+    break;
+
+  default:
+    cout << "Invalid Input";
+    mainMenu();
+    break;
+  }
+}
+
+int main()
+{
+    loginMenu();
+    return 0;
     
-    do {
+    mainMenu();
+    do
+    {
 
-        cin >> choice;
+    cin >> choice;
 
-        switch (choice) {
-            case 1: 
-                checkOutBook();
-                break;
-            case 2:
-                booksAvailable();
-                break;
-            case 3:
-                returnBook();
-                break;
-            case 4:
-                myRecord();
-                break;
-            case 5:
-                cout << "----------------------------------------" << endl;
-                cout << "\t\t\tTHANK YOU !!!" << endl;
-                cout << "----------------------------------------" << endl;
-                break;
-            default:
-                cout << "Invalid Input" << endl;
-                mainMenu();
-                break;
-        }
-    } while (choice != 5);
-return 0;
+    switch (choice)
+    {
+    case 1:
+      booksAvailable();
+      break;
+    case 2:
+      checkOutBook();
+      break;
+    case 3:
+      returnBook();
+      break;
+    case 4:
+      myRecord();
+      break;
+    case 5:
+      cout << "----------------------------------------" << endl;
+      cout << "\t\t\tTHANK YOU !!!" << endl;
+      cout << "----------------------------------------" << endl;
+      break;
+    default:
+      cout << "Invalid Input" << endl;
+      mainMenu();
+      break;
+    }
+  } while (choice != 5);
+  return 0;
 }
