@@ -76,7 +76,7 @@ void loginMenu()
       break;
     case 4:
       cout << "----------------------------------------" << endl;
-      cout << "\t\tTHANK YOU !!!" << endl;
+      cout << "\t      THANK YOU !!!" << endl;
       cout << "----------------------------------------" << endl;
       break;
     default:
@@ -99,7 +99,7 @@ void login()
   cout << "    (Complete the information below)" << endl;
   cout << "\n";
 
-  cout << "Username: ";
+  cout << "Student number: ";
   cin.ignore();
   getline(cin, user);
 
@@ -124,7 +124,7 @@ void login()
   else
   {
     cout << endl;
-    cout << "Invalid username or password" << endl;
+    cout << "Invalid Student Id or Password" << endl;
     loginMenu();
   }
 }
@@ -140,11 +140,11 @@ void registr()
   cout << "    (Complete the information below)" << endl;
   cout << "\n";
 
-  cout << "Enter your username: ";
+  cout << "Enter your Student Id: ";
   cin.ignore();
   getline(cin, reguser);
 
-  cout << "Enter your password: ";
+  cout << "Enter your Password: ";
   getline(cin, regpass);
 
   ofstream reg("database.txt", ios::app);
@@ -221,15 +221,14 @@ void mainMenu()
   cout << "[3] Return Book" << endl;
   cout << "[4] My Record" << endl;
   cout << "[5] Logout" << endl;
-  cout << "[6] Exit" << endl;
   cout << "----------------------------------------" << endl;
-  cout << "Enter your choice ([1]-[6]): ";
+  cout << "Enter your choice ([1]-[5]): ";
 
-  int choice;
+  int fchoice;
   do
   {
-    cin >> choice;
-    switch (choice)
+    cin >> fchoice;
+    switch (fchoice)
     {
     case 1:
       booksAvailable();
@@ -248,16 +247,12 @@ void mainMenu()
       cout << "You have been logged out." << endl;
       loginMenu();
       break;
-    case 6:
-      cout << "----------------------------------------" << endl;
-      cout << "\t\t\tTHANK YOU !!!" << endl;
-      cout << "----------------------------------------" << endl;
     default:
       cout << "Invalid Input" << endl;
       mainMenu();
       break;
     }
-  } while (choice != 6);
+  } while (fchoice != 5);
 }
 
 void returnBook()
@@ -268,10 +263,10 @@ void returnBook()
   if (borrowedCount != 0)
   {
     cout << "----------------------------------------" << endl;
-    cout << "\t\t\tReturn Book" << endl;
+    cout << "\t    Return Book" << endl;
     cout << "----------------------------------------" << endl;
 
-    cout << "\t(Complete the information below)" << endl;
+    cout << "    (Complete the information below)" << endl;
     cout << "\n";
 
     cout << "Name: ";
@@ -304,12 +299,13 @@ void returnBook()
   }
   else
   {
-    cout << "\nNo Books to Return" << endl;
+    cout << "\nYou haven't borrowed a book yet" << endl;
   }
 
-  cout << "\n----------------------------------------" << endl;
+  cout << "----------------------------------------" << endl;
   cout << "\tEnter to go back to the menu" << endl;
   cin.get();
+  mainMenu();
 }
 
 void checkOutBook()
@@ -351,9 +347,8 @@ void checkOutBook()
 
   borrowedBooks[borrowedCount++] = book;
 
-  cout << "Book Successfully Checked Out!" << endl;
-
-  cout << "\n----------------------------------------" << endl;
+  cout << "\nBook Successfully Checked Out!" << endl;
+  cout << "----------------------------------------" << endl;
   cout << "\tEnter to go back to the menu" << endl;
   cin.get();
   mainMenu();
@@ -917,7 +912,7 @@ void myRecord()
     }
     else
     {
-      cout << "No Books Borrowed" << endl;
+      cout << "\nNo Books Borrowed" << endl;
     }
     break;
   case 2:
@@ -935,7 +930,7 @@ void myRecord()
     }
     else
     {
-      cout << "No Books Returned" << endl;
+      cout << "\nNo Books Returned" << endl;
     }
     break;
   default:
