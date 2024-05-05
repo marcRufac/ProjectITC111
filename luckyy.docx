@@ -118,11 +118,13 @@ void login()
   input.close();
   if (count == 1)
   {
+    cout << endl;
     cout << "Login Successful!" << endl;
     mainMenu();
   }
   else
   {
+    cout << endl;
     cout << "Invalid username or password" << endl;
     loginMenu();
   }
@@ -157,7 +159,7 @@ void forgot()
   int ch;
 
   cout << "----------------------------------------" << endl;
-  cout << "\t\t\tForgot Account" << endl;
+  cout << "\t    Forgot Account" << endl;
   cout << "----------------------------------------" << endl;
 
   cout << "[1] Search your Id by Username" << endl;
@@ -190,15 +192,16 @@ void forgot()
     {
       cout << "\nAccount Found!" << endl;
       cout << "Your password is: " << sp << endl;
-      cout << "\tEnter to go back to the menu" << endl;
+      cout << "----------------------------------------" << endl;
+      cout << "      Enter to go back to the menu" << endl;
       cin.get();
       loginMenu();
     }
     else
     {
-      cout << "Sorry, your userID is not found in our Database." << endl;
+      cout << "\nSorry, your userID is not found" << endl;
       cout << "----------------------------------------" << endl;
-      cout << "\tEnter to go back to the menu" << endl;
+      cout << "      Enter to go back to the menu" << endl;
       cin.get();
       loginMenu();
     }
@@ -242,9 +245,8 @@ void mainMenu()
       myRecord();
       break;
     case 5:
-      cout << "----------------------------------------" << endl;
-      cout << "\tYou have been logged out." << endl;
-      cout << "----------------------------------------" << endl;
+      cout << endl;
+      cout << "You have been logged out." << endl;
       loginMenu();
       break;
     case 6:
@@ -350,7 +352,7 @@ void checkOutBook()
 
   borrowedBooks[borrowedCount++] = book;
 
-  cout << "\nBook Successfully Checked Out!" << endl;
+  cout << "Book Successfully Checked Out!" << endl;
 
   cout << "\n----------------------------------------" << endl;
   cout << "\tEnter to go back to the menu" << endl;
