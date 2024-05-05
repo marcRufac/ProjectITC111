@@ -6,6 +6,16 @@
 #include <ctime>
 using namespace std;
 
+string getCurrentDateTime() {
+  time_t now = time(0);
+  tm *ltm = localtime(&now);
+
+  char buffer[80];
+  strftime(buffer, 80, "%a %H:%M %m/%d/%Y", ltm);
+
+  return string(buffer);
+}
+
 struct Book
 {
   string code;
@@ -277,8 +287,7 @@ void returnBook()
     cout << "Book Code: ";
     getline(cin, book.code);
 
-    cout << "Return Date: ";
-    getline(cin, book.returnDate);
+    book.returnDate = getCurrentDateTime();
 
     ofstream returnFile("Return_Book.txt", ios::app);
     returnFile << "Name: " << person.name << endl;
@@ -328,8 +337,8 @@ void checkOutBook()
   cout << "Book Code: ";
   getline(cin, book.code);
 
-  cout << "Check-out Date: ";
-  getline(cin, book.checkOutDate);
+  book.checkOutDate = getCurrentDateTime();
+  cout << "Check-out Date: " << getCurrentDateTime() << endl;
 
   ofstream borrowFile("Borrow_Book.txt", ios::app);
   borrowFile << "Name: " << person.name << endl;
