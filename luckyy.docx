@@ -6,7 +6,8 @@
 #include <ctime>
 using namespace std;
 
-string getCurrentDateTime() {
+string getCurrentDateTime()
+{
   time_t now = time(0);
   tm *ltm = localtime(&now);
 
@@ -107,7 +108,7 @@ void login()
   getline(cin, pass);
 
   ifstream input("database.txt");
-  while (input >> p >> u)
+  while (input >> u >> p)
   {
     if (u == user && p == pass)
     {
@@ -122,9 +123,7 @@ void login()
   }
   else
   {
-    cout << "----------------------------------------" << endl;
-    cout << "\tInvalid username or password" << endl;
-    cout << "----------------------------------------" << endl;
+    cout << "Invalid username or password" << endl;
     loginMenu();
   }
 }
